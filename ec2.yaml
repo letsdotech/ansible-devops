@@ -2,6 +2,8 @@
   - name: Provision EC2 and Install Web Server
     hosts: localhost
     connection: local
+    collections:
+      - amazon.aws
     gather_facts: false
     vars:
       region: eu-central-1
