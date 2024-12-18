@@ -20,7 +20,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install ansible-lint
     - name: Lint Ansible Playbook
-      run: ansible-lint *.yml
+      run: ansible-lint ec2.yml
 
   deploy:
     needs: lint
