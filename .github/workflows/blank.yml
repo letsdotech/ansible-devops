@@ -19,6 +19,8 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install ansible-lint
+        pwd
+        ls
     - name: Lint Ansible Playbook
       run: ansible-lint ./ec2.yml
 
