@@ -22,7 +22,7 @@ jobs:
         pwd
         ls
     - name: Lint Ansible Playbook
-      run: ansible-lint ./ec2.yml
+      run: ansible-lint ./ec2.yaml
 
   deploy:
     needs: lint
