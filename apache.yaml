@@ -23,7 +23,7 @@
         mode: '0644'
 
 - name: Test Connectivity
-  hosts: localhost
+  hosts: myvalue
   connection: local
   # vars:
   #   webserver_ip: "{{ hostvars[groups['webserver'][0]]['ansible_host'] }}"
