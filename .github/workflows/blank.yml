@@ -45,7 +45,7 @@ jobs:
     - name: Run Ansible Playbook
       uses: dawidd6/action-ansible-playbook@v2
       with:
-        playbook: ec2.yml
+        playbook: ec2.yaml
         directory: ./
         key: ${{secrets.SSH_PRIVATE_KEY}}
         inventory: |
