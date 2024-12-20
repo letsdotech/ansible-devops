@@ -27,6 +27,10 @@
           assign_public_ip: true
       register: ec2
 
+    - name: Debug EC2 instance information
+      debug:
+        var: ec2
+
     - name: Add new instance to host group
       ansible.builtin.add_host:
         hostname: "{{ item.instances[0].public_ip_address }}"
