@@ -25,12 +25,9 @@
 - name: Test Connectivity
   hosts: myvalue
   connection: local
-  # vars:
-  #   webserver_ip: "{{ hostvars[groups['webserver'][0]]['ansible_host'] }}"
   tasks:
     - name: Check web server connectivity
       ansible.builtin.uri:
-        # url: "http://{{ webserver_ip }}"
         url: "http://{{ hostvars[item]['ansible_host'] }}"
         return_content: true
       loop: "{{ groups['webserver'] }}"
@@ -42,6 +39,6 @@
       loop: "{{ webpages.results }}"
       when: item.status == 200
 
-    # - name: Display web page content
-    #   ansible.builtin.debug:
-    #     var: webpage.content
+    - name: Display web page content
+      ansible.builtin.debug:
+        var: webpage.content
