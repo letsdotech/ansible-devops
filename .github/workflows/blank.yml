@@ -58,7 +58,6 @@ jobs:
         playbook: ec2.yaml
         directory: ./
         key: ${{secrets.SSH_PRIVATE_KEY}}
-        inventory: |
-          [webservers]
+        inventory: aws_ec2.yaml
         options: |
           --verbose
