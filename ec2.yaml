@@ -20,9 +20,11 @@
           image_id: "{{ image }}"
           region: "{{ region }}"
           key_name: "{{ key_name }}"
-          security_group: "{{ security_group }}"
+          security_groups: 
+            - "{{ security_group }}"
           vpc_subnet_id: "{{ subnet_id }}"
           wait: yes
+          state: present
           network:
             assign_public_ip: true
         register: ec2
