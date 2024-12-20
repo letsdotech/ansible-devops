@@ -30,6 +30,7 @@
       ansible.builtin.add_host:
         hostname: "{{ ec2.instances[0].public_ip_address }}"
         groupname: webserver
+        ansible_host: "{{ ec2.instances[0].public_ip_address }}"
 
     - name: Wait for SSH to come up
       ansible.builtin.wait_for:
@@ -65,10 +66,12 @@
 - name: Test Connectivity
   hosts: localhost
   connection: local
+  vars:
+    webserver_ip: "{{ hostvars[groups['webserver'][0]]['ansible_host'] }}"
   tasks:
     - name: Check web server connectivity
       ansible.builtin.uri:
-        url: "http://{{ hostvars[groups['webserver'][0]]['ansible_host'] }}"
+        url: "http://{{ webserver_ip }}"
         return_content: true
       register: webpage
 
