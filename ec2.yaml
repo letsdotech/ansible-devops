@@ -32,6 +32,7 @@
         hostname: "{{ ec2.instances[0].public_ip_address }}"
         groupname: webserver
         ansible_host: "{{ ec2.instances[0].public_ip_address }}"
+      loop: "{{ ec2.instances }}"
 
     - name: Wait for SSH to come up
       ansible.builtin.wait_for:
@@ -40,6 +41,7 @@
         delay: 60
         timeout: 320
         state: started
+      loop: "{{ ec2.instances }}"
 
 - name: Configure Web Server
   hosts: webserver
@@ -67,15 +69,23 @@
 - name: Test Connectivity
   hosts: localhost
   connection: local
-  vars:
-    webserver_ip: "{{ hostvars[groups['webserver'][0]]['ansible_host'] }}"
+  # vars:
+  #   webserver_ip: "{{ hostvars[groups['webserver'][0]]['ansible_host'] }}"
   tasks:
     - name: Check web server connectivity
       ansible.builtin.uri:
-        url: "http://{{ webserver_ip }}"
+        # url: "http://{{ webserver_ip }}"
+        url: "http://{{ hostvars[item]['ansible_host'] }}"
         return_content: true
+      loop: "{{ groups['webserver'] }}"
       register: webpage
-
-    - name: Display web page content
+    
+    - name: Display web page content for all instances
       ansible.builtin.debug:
-        var: webpage.content
+        msg: "Content from {{ hostvars[item.item]['ansible_host'] }}: {{ item.content }}"
+      loop: "{{ webpages.results }}"
+      when: item.status == 200
+
+    # - name: Display web page content
+    #   ansible.builtin.debug:
+    #     var: webpage.content
