@@ -42,6 +42,7 @@
 - name: Configure Web Server
   hosts: webserver
   become: true
+  remote_user: ubuntu
   tasks:
     - name: Install Apache
       ansible.builtin.apt:

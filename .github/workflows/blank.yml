@@ -20,7 +20,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install ansible-lint
         ansible-galaxy collection install amazon.aws
-        echo $SSH_PRIVATE_KEY
         pwd
         ls
     - name: Lint Ansible Playbook
@@ -50,6 +49,9 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+    - name: Check for SSH key
+      run: |
+        echo $SSH_PRIVATE_KEY
     - name: Run Ansible Playbook
       uses: dawidd6/action-ansible-playbook@v2
       with:
@@ -58,6 +60,5 @@ jobs:
         key: ${{secrets.SSH_PRIVATE_KEY}}
         inventory: |
           [webservers]
-          example.com ansible_user=ubuntu
         options: |
           --verbose
