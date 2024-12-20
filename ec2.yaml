@@ -1,78 +1,76 @@
 ---
-  - name: Provision EC2 and Install Web Server
-    hosts: localhost
-    connection: local
-    collections:
-      - amazon.aws
-    gather_facts: false
-    vars:
-      region: eu-central-1
-      instance_type: t2.micro
-      image: ami-0a628e1e89aaedf80 // Ubunto 24.04
-      key_name: ldtkeypair
-      security_group: sg-42f33f3a
-      subnet_id: subnet-87e02dcb
+- name: Provision EC2 and Install Web Server
+  hosts: localhost
+  connection: local
+  collections:
+    - amazon.aws
+  gather_facts: false
+  vars:
+    region: eu-central-1
+    instance_type: t2.micro
+    image: ami-0a628e1e89aaedf80 // Ubunto 24.04
+    key_name: ldtkeypair
+    security_group: sg-42f33f3a
+    subnet_id: subnet-87e02dcb
+  tasks:
+    - name: Provision EC2 instance
+      amazon.aws.ec2_instance:
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ image }}"
+        region: "{{ region }}"
+        key_name: "{{ key_name }}"
+        security_groups: 
+          - "{{ security_group }}"
+        vpc_subnet_id: "{{ subnet_id }}"
+        wait: true
+        state: true
+        network:
+          assign_public_ip: true
+      register: ec2
+
+    - name: Add new instance to host group
+      add_host:
+        hostname: "{{ ec2.instances[0].public_ip_address }}"
+        groupname: webserver
+
+    - name: Wait for SSH to come up
+      wait_for:
+        host: "{{ ec2.instances[0].public_ip_address }}"
+        port: 22
+        delay: 60
+        timeout: 320
+        state: started
   
-    tasks:
-      - name: Provision EC2 instance
-        amazon.aws.ec2_instance:
-          instance_type: "{{ instance_type }}"
-          image_id: "{{ image }}"
-          region: "{{ region }}"
-          key_name: "{{ key_name }}"
-          security_groups: 
-            - "{{ security_group }}"
-          vpc_subnet_id: "{{ subnet_id }}"
-          wait: yes
-          state: present
-          network:
-            assign_public_ip: true
-        register: ec2
-  
-      - name: Add new instance to host group
-        add_host:
-          hostname: "{{ ec2.instances[0].public_ip_address }}"
-          groupname: webserver
-  
-      - name: Wait for SSH to come up
-        wait_for:
-          host: "{{ ec2.instances[0].public_ip_address }}"
-          port: 22
-          delay: 60
-          timeout: 320
-          state: started
-  
-  - name: Configure Web Server
-    hosts: webserver
-    become: yes
-    tasks:
-      - name: Install Apache
-        yum:
-          name: httpd
-          state: present
-  
-      - name: Start Apache service
-        service:
-          name: httpd
-          state: started
-          enabled: yes
-  
-      - name: Create index.html
-        copy:
-          content: "<html><body><h1>Hello from Ansible-configured EC2!</h1></body></html>"
-          dest: /var/www/html/index.html
-  
-  - name: Test Connectivity
-    hosts: localhost
-    connection: local
-    tasks:
-      - name: Check web server connectivity
-        uri:
-          url: "http://{{ hostvars[groups['webserver'][0]]['ansible_host'] }}"
-          return_content: yes
-        register: webpage
-  
-      - name: Display web page content
-        debug:
-          var: webpage.content
-  
+- name: Configure Web Server
+  hosts: webserver
+  become: yes
+  tasks:
+    - name: Install Apache
+      yum:
+        name: httpd
+        state: present
+
+    - name: Start Apache service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Create index.html
+      copy:
+        content: "<html><body><h1>Hello from Ansible-configured EC2!</h1></body></html>"
+        dest: /var/www/html/index.html
+
+- name: Test Connectivity
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Check web server connectivity
+      uri:
+        url: "http://{{ hostvars[groups['webserver'][0]]['ansible_host'] }}"
+        return_content: yes
+      register: webpage
+
+    - name: Display web page content
+      debug:
+        var: webpage.content
