@@ -79,7 +79,7 @@
         return_content: true
       loop: "{{ groups['webserver'] }}"
       register: webpage
-    
+
     - name: Display web page content for all instances
       ansible.builtin.debug:
         msg: "Content from {{ hostvars[item.item]['ansible_host'] }}: {{ item.content }}"
