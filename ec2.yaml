@@ -29,14 +29,14 @@
 
     - name: Add new instance to host group
       ansible.builtin.add_host:
-        hostname: "{{ ec2.instances[0].public_ip_address }}"
+        hostname: "{{ item.instances[0].public_ip_address }}"
         groupname: webserver
-        ansible_host: "{{ ec2.instances[0].public_ip_address }}"
+        ansible_host: "{{ item.instances[0].public_ip_address }}"
       loop: "{{ ec2.instances }}"
 
     - name: Wait for SSH to come up
       ansible.builtin.wait_for:
-        host: "{{ ec2.instances[0].public_ip_address }}"
+        host: "{{ item.instances[0].public_ip_address }}"
         port: 22
         delay: 60
         timeout: 320
@@ -78,7 +78,7 @@
         url: "http://{{ hostvars[item]['ansible_host'] }}"
         return_content: true
       loop: "{{ groups['webserver'] }}"
-      register: webpage
+      register: webpages
 
     - name: Display web page content for all instances
       ansible.builtin.debug:
