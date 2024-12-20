@@ -33,9 +33,9 @@
 
     - name: Add new instance to host group
       ansible.builtin.add_host:
-        hostname: "{{ item.instances[0].public_ip_address }}"
+        hostname: "{{ item.public_ip_address }}"
         groupname: webserver
-        ansible_host: "{{ item.instances[0].public_ip_address }}"
+        ansible_host: "{{ item.public_ip_address }}"
       loop: "{{ ec2.instances }}"
 
     - name: Wait for SSH to come up
