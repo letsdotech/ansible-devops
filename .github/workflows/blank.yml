@@ -52,10 +52,19 @@ jobs:
     - name: Check for SSH key
       run: |
         echo $SSH_PRIVATE_KEY
-    - name: Run Ansible Playbook
+    - name: Provision EC2 Instances
       uses: dawidd6/action-ansible-playbook@v2
       with:
         playbook: ec2.yaml
+        directory: ./
+        key: ${{secrets.SSH_PRIVATE_KEY}}
+        # inventory: aws_ec2.yaml
+        options: |
+          --verbose
+    - name: Install Apache Webserver
+      uses: dawidd6/action-ansible-playbook@v2
+      with:
+        playbook: apache.yaml
         directory: ./
         key: ${{secrets.SSH_PRIVATE_KEY}}
         inventory: aws_ec2.yaml

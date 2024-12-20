@@ -1,0 +1,47 @@
+---
+- name: Configure Web Server
+  hosts: myvalue
+  become: true
+  remote_user: ubuntu
+  tasks:
+    - name: Install Apache
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+        update_cache: true
+
+    - name: Start Apache service
+      ansible.builtin.service:
+        name: apache2
+        state: started
+        enabled: true
+
+    - name: Create index.html
+      ansible.builtin.copy:
+        content: "<html><body><h1>Hello from Ansible-configured EC2!</h1></body></html>"
+        dest: /var/www/html/index.html
+        mode: '0644'
+
+- name: Test Connectivity
+  hosts: localhost
+  connection: local
+  # vars:
+  #   webserver_ip: "{{ hostvars[groups['webserver'][0]]['ansible_host'] }}"
+  tasks:
+    - name: Check web server connectivity
+      ansible.builtin.uri:
+        # url: "http://{{ webserver_ip }}"
+        url: "http://{{ hostvars[item]['ansible_host'] }}"
+        return_content: true
+      loop: "{{ groups['webserver'] }}"
+      register: webpages
+
+    - name: Display web page content for all instances
+      ansible.builtin.debug:
+        msg: "Content from {{ hostvars[item.item]['ansible_host'] }}: {{ item.content }}"
+      loop: "{{ webpages.results }}"
+      when: item.status == 200
+
+    # - name: Display web page content
+    #   ansible.builtin.debug:
+    #     var: webpage.content

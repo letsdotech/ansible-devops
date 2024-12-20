@@ -1,7 +1,6 @@
 ---
 - name: Provision EC2 and Install Web Server
-  # hosts: localhost
-  hosts: myvalue
+  hosts: localhost
   connection: local
   gather_facts: false
   vars:
@@ -12,11 +11,11 @@
     security_group: sg-42f33f3a
     subnet_id: subnet-87e02dcb
   tasks:
-    # - name: Gather information about existing instances
-    #   amazon.aws.ec2_instance_info:
-    #     filters:
-    #       "tag:MyKey": "MyValue"  # Adjust according to your tagging strategy
-    #   register: existing_instances
+    - name: Gather information about existing instances
+      amazon.aws.ec2_instance_info:
+        filters:
+          "tag:MyKey": "MyValue"  # Adjust according to your tagging strategy
+      register: existing_instances
 
     - name: Provision EC2 instance
       amazon.aws.ec2_instance:
@@ -29,8 +28,7 @@
         vpc_subnet_id: "{{ subnet_id }}"
         wait: true
         state: present
-        count: 3
-        # count: "{{ 3 if existing_instances.instances | length == 0 else 0 }}"
+        count: "{{ 3 if existing_instances.instances | length == 0 else 0 }}"
         network:
           assign_public_ip: true
         tags:
