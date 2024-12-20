@@ -1,6 +1,8 @@
 plugin: aws_ec2
 regions:
   - eu-central-1
-keyed_groups:
-  - key: MyKey
-    prefix: key
+#keyed_groups:
+#  - key: MyKey
+#    prefix: key
+groups:
+  myvalue: "'MyValue' in tags.MyKey"
