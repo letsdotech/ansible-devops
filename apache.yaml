@@ -1,6 +1,7 @@
 ---
 - name: Install Apache on EC2 Instances
   hosts: tag_MyKey_MyValue
+  remote_user: ubuntu
   become: true
   gather_facts: true
   vars:
