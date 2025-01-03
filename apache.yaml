@@ -1,7 +1,7 @@
 ---
 - name: Install Apache on EC2 Instances
   hosts: tag_MyKey_MyValue
-  become: yes
+  become: true
   gather_facts: false
   vars:
     region: eu-central-1
