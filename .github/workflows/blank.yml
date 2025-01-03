@@ -77,7 +77,7 @@ jobs:
         chmod 600 ~/.ssh/id_rsa
     - name: Install Apache Webserver
       run: |
-        ansible-playbook -i aws_ec2.yaml apache.yaml --verbose
+        ansible-playbook -i aws_ec2.yaml apache.yaml --user ubuntu --verbose
     # - name: Install Apache Webserver
     #   uses: dawidd6/action-ansible-playbook@v2
     #   with:
