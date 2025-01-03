@@ -63,6 +63,10 @@ jobs:
         # inventory: aws_ec2.yaml
         options: |
           --verbose
+    - name: Install Ansible Amazon AWS Collection
+      run: ansible-galaxy collection install amazon.aws
+    - name: Validate Inventory
+      run: ansible-inventory -i aws_ec2.yaml --list --yaml
     - name: Install Apache Webserver
       uses: dawidd6/action-ansible-playbook@v2
       with:
