@@ -1,0 +1,105 @@
+# ---
+# - name: Demonstrate Ansible Debug Module
+#   hosts: localhost
+#   gather_facts: no
+#   vars:
+#     greeting: "Hello"
+#     recipient: "World"
+#     uptime_command: "uptime -p"
+
+#   tasks:
+#     - name: Print a simple greeting message
+#       ansible.builtin.debug:
+#         msg: "{{ greeting }}, {{ recipient }}! Welcome to the Ansible Debug Module."
+
+#     - name: Print variable values
+#       ansible.builtin.debug:
+#         msg: "The greeting is '{{ greeting }}' and the recipient is '{{ recipient }}'."
+
+#     - name: Get system uptime
+#       ansible.builtin.shell: "{{ uptime_command }}"
+#       register: system_uptime
+
+#     - name: Print system uptime
+#       ansible.builtin.debug:
+#         msg: "The system has been up for: {{ system_uptime.stdout }}"
+
+#     - name: Print all variables available in this playbook
+#       ansible.builtin.debug:
+#         var: hostvars[inventory_hostname]
+
+
+
+
+
+
+# ---
+# - name: Print a Simple Statement
+#   hosts: localhost
+#   tasks:
+#     - name: Print a greeting message
+#       debug:
+#         msg: "Hello World! Welcome to Ansible Debug Module."
+# - name: Print Variable Values
+#   hosts: localhost
+#   vars:
+#     greetings: "Hello"
+#     site: "Ansible"
+#   tasks:
+#     - name: Print the value of a variable
+#       debug:
+#         msg: "{{ greetings }}, Welcome to {{ site }}."
+# - name: Use Debug Module with Shell and Register
+#   hosts: localhost
+#   tasks:
+#     - name: Get system uptime
+#       shell: uptime -p
+#       register: system_uptime
+
+#     - name: Print system uptime
+#       debug:
+#         msg: "The system has been up for: {{ system_uptime.stdout }}"
+
+
+
+
+# ---
+# - name: Demonstrate Ansible Debugger with Strategy
+#   hosts: localhost
+#   strategy: debug  # Enable debug strategy for all tasks in this play
+
+#   tasks:
+#     - name: Task that will fail and invoke the debugger
+#       ansible.builtin.command: "false"
+
+
+
+
+# ---
+# - name: Demonstrate Ansible Debugger with Keyword
+#   hosts: localhost
+#   tasks:
+#     - name: Task that will fail and invoke the debugger
+#       ansible.builtin.command: "false"  # This command always fails
+#       debugger: on_failed               # Enable debugger only when the task fails
+# use env var ANSIBLE_ENABLE_TASK_DEBUGGER=True for 
+
+
+
+# ---
+# - name: Demonstrate Ansible Verbose Mode
+#   hosts: localhost
+#   tasks:
+#     - name: Task with no verbosity
+#       debug:
+#         msg: "This message will always appear regardless of verbosity."
+
+#     - name: Task with verbosity level 2
+#       debug:
+#         msg: "This message will only appear with -vv or higher verbosity."
+#         verbosity: 2
+
+#     - name: Task with verbosity level 3
+#       debug:
+#         msg: "This message will only appear with -vvv or higher verbosity."
+#         verbosity: 3
