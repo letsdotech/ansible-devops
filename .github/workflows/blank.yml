@@ -69,7 +69,7 @@ jobs:
       run: ansible-inventory -i aws_ec2.yaml --list --yaml
     - name: Install Apache Webserver
       run: |
-        ansible-playbook -i aws_ec2.yaml apache.yaml --verbose
+        ansible-playbook -i aws_ec2.yaml apache.yaml --private-key ${{secrets.SSH_PRIVATE_KEY}} --verbose
     # - name: Install Apache Webserver
     #   uses: dawidd6/action-ansible-playbook@v2
     #   with:
