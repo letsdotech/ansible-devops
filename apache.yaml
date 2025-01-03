@@ -1,44 +1,95 @@
 ---
-- name: Configure Web Server
-  hosts: myvalue
-  become: true
-  remote_user: ubuntu
+- name: Install Apache on EC2 Instances
+  hosts: tag_MyKey_MyValue
+  become: yes
+  gather_facts: yes
+  vars:
+    region: eu-central-1
+    instance_type: t2.micro
+    image: ami-0a628e1e89aaedf80  # Ubuntu 24.04
+    key_name: ldtkeypair
+    security_group: sg-42f33f3a
+    subnet_id: subnet-87e02dcb
+
   tasks:
-    - name: Install Apache
+    - name: Update apt cache
       ansible.builtin.apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Install Apache
+      ansible.builtin.package:
         name: apache2
         state: present
-        update_cache: true
 
     - name: Start Apache service
       ansible.builtin.service:
         name: apache2
         state: started
-        enabled: true
+        enabled: yes
 
-    - name: Create index.html
+    - name: Create a simple index.html
       ansible.builtin.copy:
-        content: "<html><body><h1>Hello from Ansible-configured EC2!</h1></body></html>"
+        content: |
+          <html>
+          <body>
+          <h1>Hello from {{ ansible_hostname }}</h1>
+          <p>This server was provisioned using Ansible.</p>
+          </body>
+          </html>
         dest: /var/www/html/index.html
         mode: '0644'
 
-- name: Test Connectivity
-  hosts: myvalue
-  connection: local
-  tasks:
-    - name: Check web server connectivity
-      ansible.builtin.uri:
-        url: "http://{{ hostvars[item]['ansible_host'] }}"
-        return_content: true
-      loop: "{{ groups['webserver'] }}"
-      register: webpages
+    - name: Ensure Apache is running
+      ansible.builtin.service:
+        name: apache2
+        state: restarted
 
-    - name: Display web page content for all instances
-      ansible.builtin.debug:
-        msg: "Content from {{ hostvars[item.item]['ansible_host'] }}: {{ item.content }}"
-      loop: "{{ webpages.results }}"
-      when: item.status == 200
 
-    - name: Display web page content
-      ansible.builtin.debug:
-        var: webpage.content
+
+
+
+# ---
+# - name: Configure Web Server
+#   hosts: myvalue
+#   become: true
+#   remote_user: ubuntu
+#   tasks:
+#     - name: Install Apache
+#       ansible.builtin.apt:
+#         name: apache2
+#         state: present
+#         update_cache: true
+
+#     - name: Start Apache service
+#       ansible.builtin.service:
+#         name: apache2
+#         state: started
+#         enabled: true
+
+#     - name: Create index.html
+#       ansible.builtin.copy:
+#         content: "<html><body><h1>Hello from Ansible-configured EC2!</h1></body></html>"
+#         dest: /var/www/html/index.html
+#         mode: '0644'
+
+# - name: Test Connectivity
+#   hosts: myvalue
+#   connection: local
+#   tasks:
+#     - name: Check web server connectivity
+#       ansible.builtin.uri:
+#         url: "http://{{ hostvars[item]['ansible_host'] }}"
+#         return_content: true
+#       loop: "{{ groups['webserver'] }}"
+#       register: webpages
+
+#     - name: Display web page content for all instances
+#       ansible.builtin.debug:
+#         msg: "Content from {{ hostvars[item.item]['ansible_host'] }}: {{ item.content }}"
+#       loop: "{{ webpages.results }}"
+#       when: item.status == 200
+
+#     - name: Display web page content
+#       ansible.builtin.debug:
+#         var: webpage.content
